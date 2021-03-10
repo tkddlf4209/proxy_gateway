@@ -16,6 +16,8 @@ server.listen(port, async function () {
 var crawler_sockets = [];
 var bot_sockets = [];
 var running_crawler_socket = undefined;
+var ids = new Map();
+var init = false;
 io.on("connection", (socket) => {
 
   console.log("websocket connected ID : ", socket.id,'Type : ',socket.handshake.headers.type);
@@ -32,7 +34,35 @@ io.on("connection", (socket) => {
 
   socket.on("notice", (rsp) => {
     if(rsp.result == 'success'){
-      console.log(rsp.data);
+      var posts = rsp.data.data.posts;
+      console.log(posts);
+      
+      for (var i = 0; i < posts.length; i++) {
+          var notice_id = posts[i].id;
+          var notice_title = posts[i].text;
+
+          if(init){
+              if (notice_id != undefined && notice_title != undefined) {
+                  
+                  // if(notice_id==1062){ // 최근 헤데라 프로젝트 공지사항 아이디
+                  //     notice_id= 111
+                  // }
+
+                  var latest_title = ids.get(notice_id);
+                  if (latest_title == undefined) { // 신규프로젝트 공시 등장
+                      //callback(posts[i]);
+                      ids.set(notice_id, notice_title);
+                  }
+              }
+
+          }else{
+              // 초기화
+              if (notice_id != undefined && notice_title != undefined) {
+                  ids.set(notice_id, notice_title);
+              }
+          }
+      }
+
     }else{
       deleteSocket(socket);
     }
