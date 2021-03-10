@@ -63,6 +63,10 @@ io.on("connection", (socket) => {
           }
       }
 
+      if(posts.length>0){
+        init = true;
+      }
+
     }else{
       deleteSocket(socket);
     }
