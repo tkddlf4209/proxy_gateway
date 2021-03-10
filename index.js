@@ -1,5 +1,6 @@
 
-var axios = require('axios').default;
+
+/var request = require("request");
 var express = require('express');
 var app = express();
 var cors = require("cors");
@@ -55,15 +56,14 @@ function deleteSocket(socket) {
 
 
   if(running_crawler_socket == socket){
-    startCrawler();
+    await startCrawler();
     if(socket.handshake.headers.type == TYPE_CRAWLER){
-      restartCrawlerServer(socket)
+      await restartCrawlerServer(socket)
     }
   }
 }
 
-function startCrawler(){
-
+async function startCrawler(){
 
   if(crawler_sockets.length > 0){
     running_crawler_socket = crawler_sockets[0];
@@ -72,13 +72,12 @@ function startCrawler(){
     running_crawler_socket = undefined;
     console.log('crawler socket legnth 0');
   }
-
   
 }
 
 
 const TOKEN = '17a48625-de4b-447c-ac52-1b2124b59878';
-function restartCrawlerServer(socket) {
+async function restartCrawlerServer(socket) {
   var appName = socket.handshake.headers.app_name;
   if(appName == undefined){
     console.log('appName undefined');
@@ -89,17 +88,20 @@ function restartCrawlerServer(socket) {
     console.log('appName APP_NAME_UNDEFINED not allowed');
     return;
   }
-
-  axios({
-    method: 'delete',
-    url: 'https://api.heroku.com/apps/' + appName + '/dynos/',
-    timeout: 30000,
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/vnd.heroku+json; version=3',
-      'Authorization': 'Bearer ' + TOKEN
-    }
+  request({
+      url: 'https://api.heroku.com/apps/' + appName + '/dynos/',
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.heroku+json; version=3',
+        'Authorization': 'Bearer ' + TOKEN   
+      }
+    }, function (error, response, body) {
+      if(error){
+        console.log(error);
+      }
   });
+
 }
 
 
