@@ -56,10 +56,15 @@ function deleteSocket(socket) {
 
   if(running_crawler_socket == socket){
     startCrawler();
+    if(socket.handshake.headers.type == TYPE_CRAWLER){
+      restartCrawlerServer(socket)
+    }
   }
 }
 
 function startCrawler(){
+
+
   if(crawler_sockets.length > 0){
     running_crawler_socket = crawler_sockets[0];
     io.to(running_crawler_socket.id).emit("start_crawler", { interval : 500 });
@@ -68,9 +73,7 @@ function startCrawler(){
     console.log('crawler socket legnth 0');
   }
 
-  if(socket.handshake.headers.type == TYPE_CRAWLER){
-    restartCrawlerServer(socket)
-  }
+  
 }
 
 
