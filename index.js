@@ -53,11 +53,11 @@ function deleteSocket(socket) {
   bot_sockets.splice(position, 1);
 
   if(running_crawler_socket == socket){
-    await startCrawler();
+     startCrawler();
   }
 }
 
-async function startCrawler(){
+ function startCrawler(){
 
   if(crawler_sockets.length > 0){
     running_crawler_socket = crawler_sockets[0];
