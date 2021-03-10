@@ -79,7 +79,7 @@ function parsePosts(posts){
     init = true;
   }
 
-  //console.log(ids,ids.size,ids);
+  console.log(ids,ids.size);
 
 }
 
