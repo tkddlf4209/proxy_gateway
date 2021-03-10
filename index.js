@@ -1,6 +1,4 @@
 
-
-/var request = require("request");
 var express = require('express');
 var app = express();
 var cors = require("cors");
@@ -54,12 +52,8 @@ function deleteSocket(socket) {
   position = bot_sockets.indexOf(socket);
   bot_sockets.splice(position, 1);
 
-
   if(running_crawler_socket == socket){
     await startCrawler();
-    if(socket.handshake.headers.type == TYPE_CRAWLER){
-      await restartCrawlerServer(socket)
-    }
   }
 }
 
@@ -74,36 +68,4 @@ async function startCrawler(){
   }
   
 }
-
-
-const TOKEN = '17a48625-de4b-447c-ac52-1b2124b59878';
-async function restartCrawlerServer(socket) {
-  var appName = socket.handshake.headers.app_name;
-  if(appName == undefined){
-    console.log('appName undefined');
-    return;
-  }
-
-  if(appName == 'APP_NAME_UNDEFINED'){
-    console.log('appName APP_NAME_UNDEFINED not allowed');
-    return;
-  }
-  request({
-      url: 'https://api.heroku.com/apps/' + appName + '/dynos/',
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/vnd.heroku+json; version=3',
-        'Authorization': 'Bearer ' + TOKEN   
-      }
-    }, function (error, response, body) {
-      if(error){
-        console.log(error);
-      }
-  });
-
-}
-
-
-
 
