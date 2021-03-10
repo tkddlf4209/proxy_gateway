@@ -19,7 +19,6 @@ var running_crawler_socket = undefined;
 var ids = new Map();
 var init = false;
 io.on("connection", (socket) => {
-
   console.log("websocket connected ID : ", socket.id,'Type : ',socket.handshake.headers.type);
 
   if(socket.handshake.headers.type == TYPE_CRAWLER){
@@ -37,9 +36,7 @@ io.on("connection", (socket) => {
       var posts = rsp.data.data.posts;
       parsePosts(posts);
     }
-    // }else{
-    //   deleteSocket(socket);
-    // }
+    
   });
 
   socket.on("disconnect", () => {
@@ -56,13 +53,14 @@ function parsePosts(posts){
     if(init){
         if (notice_id != undefined && notice_title != undefined) {
             
-            // if(notice_id==1062){ // 최근 헤데라 프로젝트 공지사항 아이디
-            //     notice_id= 111
-            // }
+            if(notice_id==1080){ // 최근 무비
+                notice_id= 111
+            }
 
             var latest_title = ids.get(notice_id);
             if (latest_title == undefined) { // 신규프로젝트 공시 등장
                 //callback(posts[i]);
+                bot_sockets.map((socket)=>  io.to(socket.id).emit('new_post',posts[i]));
                 ids.set(notice_id, notice_title);
             }
         }
@@ -79,7 +77,7 @@ function parsePosts(posts){
     init = true;
   }
 
-  console.log(ids,ids.size,ids);
+  //console.log(ids,ids.size,ids);
 
 }
 
