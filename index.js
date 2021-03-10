@@ -55,9 +55,9 @@ function parsePosts(posts){
     if(init){
         if (notice_id != undefined && notice_title != undefined) {
             
-            if(notice_id==1080){ // 최근 무비
-                notice_id= 1111
-            }
+            // if(notice_id==1080){ // 최근 무비
+            //     notice_id= 1111
+            // }
 
             var latest_title = ids.get(notice_id);
             if (latest_title == undefined) { // 신규프로젝트 공시 등장
