@@ -53,9 +53,6 @@ function deleteSocket(socket) {
   position = bot_sockets.indexOf(socket);
   bot_sockets.splice(position, 1);
 
-  if(socket.handshake.headers.type == TYPE_CRAWLER){
-    restartCrawlerServer(socket)
-  }
 
   if(running_crawler_socket == socket){
     startCrawler();
@@ -69,6 +66,10 @@ function startCrawler(){
   }else{
     running_crawler_socket = undefined;
     console.log('crawler socket legnth 0');
+  }
+
+  if(socket.handshake.headers.type == TYPE_CRAWLER){
+    restartCrawlerServer(socket)
   }
 }
 
