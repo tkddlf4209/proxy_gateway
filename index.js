@@ -35,41 +35,11 @@ io.on("connection", (socket) => {
   socket.on("notice", (rsp) => {
     if(rsp.result == 'success'){
       var posts = rsp.data.data.posts;
-      console.log(posts);
-      
-      for (var i = 0; i < posts.length; i++) {
-          var notice_id = posts[i].id;
-          var notice_title = posts[i].text;
-
-          if(init){
-              if (notice_id != undefined && notice_title != undefined) {
-                  
-                  // if(notice_id==1062){ // 최근 헤데라 프로젝트 공지사항 아이디
-                  //     notice_id= 111
-                  // }
-
-                  var latest_title = ids.get(notice_id);
-                  if (latest_title == undefined) { // 신규프로젝트 공시 등장
-                      //callback(posts[i]);
-                      ids.set(notice_id, notice_title);
-                  }
-              }
-
-          }else{
-              // 초기화
-              if (notice_id != undefined && notice_title != undefined) {
-                  ids.set(notice_id, notice_title);
-              }
-          }
-      }
-
-      if(posts.length>0){
-        init = true;
-      }
-
-    }else{
-      deleteSocket(socket);
+      parsePosts(posts);
     }
+    // }else{
+    //   deleteSocket(socket);
+    // }
   });
 
   socket.on("disconnect", () => {
@@ -77,6 +47,41 @@ io.on("connection", (socket) => {
     deleteSocket(socket);
   });
 });
+
+function parsePosts(posts){
+  for (var i = 0; i < posts.length; i++) {
+    var notice_id = posts[i].id;
+    var notice_title = posts[i].text;
+
+    if(init){
+        if (notice_id != undefined && notice_title != undefined) {
+            
+            // if(notice_id==1062){ // 최근 헤데라 프로젝트 공지사항 아이디
+            //     notice_id= 111
+            // }
+
+            var latest_title = ids.get(notice_id);
+            if (latest_title == undefined) { // 신규프로젝트 공시 등장
+                //callback(posts[i]);
+                ids.set(notice_id, notice_title);
+            }
+        }
+
+    }else{
+        // 초기화
+        if (notice_id != undefined && notice_title != undefined) {
+            ids.set(notice_id, notice_title);
+        }
+    }
+  }
+
+  if(posts.length>0){
+    init = true;
+  }
+
+  console.log(ids,ids.size,ids);
+
+}
 
 function deleteSocket(socket) {
   
