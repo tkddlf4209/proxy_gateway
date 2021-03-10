@@ -54,7 +54,7 @@ function parsePosts(posts){
         if (notice_id != undefined && notice_title != undefined) {
             
             if(notice_id==1080){ // 최근 무비
-                notice_id= 111
+                notice_id= 1111
             }
 
             var latest_title = ids.get(notice_id);
