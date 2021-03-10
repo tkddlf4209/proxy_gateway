@@ -100,7 +100,7 @@ function deleteSocket(socket) {
 
   if(crawler_sockets.length > 0){
     running_crawler_socket = crawler_sockets[0];
-    io.to(running_crawler_socket.id).emit("start_crawler", { interval : 150 });
+    io.to(running_crawler_socket.id).emit("start_crawler", { interval : 200 });
   }else{
     running_crawler_socket = undefined;
     console.log('crawler socket legnth 0');
