@@ -38,7 +38,8 @@ io.on("connection", (socket) => {
       var posts = rsp.data.data.posts;
       parsePosts(posts);
     }else{
-      deleteSocket(socket); // not disconnect , only remove in socket_list
+      console.log('error@@@@@');
+      //deleteSocket(socket); // not disconnect , only remove in socket_list
     }
   });
 
