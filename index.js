@@ -59,7 +59,7 @@ io.on("connection", (socket) => {
       delete bot_sockets[socket.id];
     }
 
-    console.log('bot socket count ',Object.keys(bot_sockets).size);
+    console.log('bot socket count ',Object.keys(bot_sockets).length);
   });
 });
 
@@ -120,7 +120,7 @@ function parsePosts(posts){
 // }
 
  function startCrawler(){
-   if(Object.keys(crawler_sockets).size >0){
+   if(Object.keys(crawler_sockets).length >0){
      var first_crawler_socket_id = Object.keys(crawler_sockets)[0];
      running_crawler_socket_id = running_crawler_socket_id;
      io.to(first_crawler_socket_id.id).emit("start_crawler", { interval : 350 });
