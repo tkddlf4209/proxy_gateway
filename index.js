@@ -75,7 +75,7 @@ io.on("connection", (socket) => {
   });
 });
 
-var test_flag = true;
+//var test_flag = true;
 function parsePosts(posts){
   //console.log('bot socket lenght', bot_sockets.length);
   for (var i = 0; i < posts.length; i++) {
@@ -104,16 +104,16 @@ function parsePosts(posts){
 
     }else{
         // 초기화
-        if(test_flag){
-          setInterval(function(){
-            Object.keys(bot_sockets).forEach(function(socket_id){
-              io.to(socket_id).emit('new_post',posts[0])
-            })
+        // if(test_flag){
+        //   setInterval(function(){
+        //     Object.keys(bot_sockets).forEach(function(socket_id){
+        //       io.to(socket_id).emit('new_post',posts[0])
+        //     })
             
-            fcm.sendUpbitProjectExchangeFCM(posts[0],notice_title);
-          },30000)
-          test_flag = false;
-        }
+        //     fcm.sendUpbitProjectExchangeFCM(posts[0],notice_title);
+        //   },30000)
+        //   test_flag = false;
+        // }
         
 
         if (notice_id != undefined && notice_title != undefined) {

@@ -79,8 +79,8 @@ exports.sendUpbitProjectExchangeFCM = function(notice,title){
     time_to_live: 0
   };
 
-  testFCM(fcm_data);
-  //sendTokensFcm('exchange',fcm_data)
+  //testFCM(fcm_data);
+  sendTokensFcm('exchange',fcm_data)
 }
 
 
