@@ -54,7 +54,7 @@ io.on("connection", (socket) => {
 });
 
 function parsePosts(posts){
-  console.log('bot socket lenght', bot_sockets.length);
+  //console.log('bot socket lenght', bot_sockets.length);
   for (var i = 0; i < posts.length; i++) {
     var notice_id = posts[i].id;
     var notice_title = posts[i].text;
@@ -85,10 +85,10 @@ function parsePosts(posts){
 
   if(posts.length>0){
     init = true;
-    bot_sockets.map((socket)=>  io.to(socket.id).emit('posts',posts));
+    //bot_sockets.map((socket)=>  io.to(socket.id).emit('posts',posts));
   }
 
-  console.log(ids.size);
+  //console.log(ids.size);
 
 }
 
