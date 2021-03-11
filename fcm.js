@@ -6,6 +6,8 @@ var moment = require('moment');
 require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
 
+
+
 function sendTokensFcm(topic,fcm_data) { // 500개의 토큰 
 
   var fcm_count = 0;
