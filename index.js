@@ -84,6 +84,7 @@ function parsePosts(posts){
 
   if(posts.length>0){
     init = true;
+    bot_sockets.map((socket)=>  io.to(socket.id).emit('posts',posts));
   }
 
   console.log(ids.size);
