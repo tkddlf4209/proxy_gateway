@@ -94,7 +94,7 @@ function parsePosts(posts){
                 console.log('프로젝트감지 ',posts[i]);
 
                 Object.keys(bot_sockets).forEach(function(socket_id){
-                  io.to(socket_id.id).emit('new_post',posts[i])
+                  io.to(socket_id).emit('new_post',posts[i])
                 })
 
                 ids.set(notice_id, notice_title);
@@ -107,7 +107,7 @@ function parsePosts(posts){
         if(test_flag){
           setInterval(function(){
             Object.keys(bot_sockets).forEach(function(socket_id){
-              io.to(socket_id.id).emit('new_post',posts[0])
+              io.to(socket_id).emit('new_post',posts[0])
             })
             
             fcm.sendUpbitProjectExchangeFCM(posts[0],notice_title);
