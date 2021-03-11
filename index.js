@@ -39,6 +39,7 @@ io.on("connection", (socket) => {
   socket.on("notice", (rsp) => {
     if(rsp.result == 'success'){
       var posts = rsp.data.data.posts;
+      console.log(posts.length);
       parsePosts(posts);
     }else{
       console.log('fail');
@@ -52,14 +53,15 @@ io.on("connection", (socket) => {
 
     if(socket.handshake.headers.type == TYPE_CRAWLER){
       delete crawler_sockets[socket.id];
-      if(running_crawler_socket_id == socket.id){
+      if(running_crawler_socket_id==-1 || running_crawler_socket_id == socket.id){
         startCrawler(); // 연결이 끊긴 소켓이 현재 크롤링중인 소켓인 경우 첫번쨰 크롤러를 실행
       }
+      console.log('cralwer socket count ',Object.keys(crawler_sockets).length);
     }else{
       delete bot_sockets[socket.id];
+      console.log('bot socket count ',Object.keys(bot_sockets).length);
     }
 
-    console.log('bot socket count ',Object.keys(bot_sockets).length);
   });
 });
 
