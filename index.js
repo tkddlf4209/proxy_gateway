@@ -1,4 +1,3 @@
-
 var fcm = require('./fcm.js');
 var express = require('express');
 var app = express();

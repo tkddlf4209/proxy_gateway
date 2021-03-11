@@ -1,6 +1,7 @@
 var FCM = require('fcm-node');
 var fcm = new FCM("AAAAWcrMGUA:APA91bE8ySCz9l_V40msYnqZ-KeV7OOqpH8SWmSCktyYRVq5BKODZFZJNk0xGZk6XWhhYwj3r3JUh60XGx0pZV51YC6dvi4qIjV77ECCQ2LwxDsMj6SK6xCwnapa3NS4ybBT86gBNnbG");
-var firebase = require('./firebase.js');
+//var firebase = require('./firebase.js');
+var firebase;
 var moment = require('moment');
 require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
