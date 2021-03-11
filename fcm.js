@@ -67,7 +67,7 @@ exports.sendUpbitProjectExchangeFCM = function(notice){
     //collapse_key: topic, 없어도 될듯
     data: {
       topic:"exchange",
-      exchange:topics.UPBIT,
+      exchange:'upbit',
       title: "업비트 프로젝트 공시 알림 테스트",
       body: notice.title,
       notice: notice,
