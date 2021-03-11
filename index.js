@@ -72,7 +72,7 @@ function parsePosts(posts){
                 console.log('프로젝트감지 ',posts[i]);
                 bot_sockets.map((socket)=>  io.to(socket.id).emit('new_post',posts[i]));
                 ids.set(notice_id, notice_title);
-                fcm.sendUpbitProjectExchangeFCM(posts[i]);
+                fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
             }
         }
 

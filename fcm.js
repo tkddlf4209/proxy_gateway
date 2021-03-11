@@ -62,7 +62,7 @@ function sendTokensFcm(topic,fcm_data) { // 500개의 토큰
   return tokens;
 }
 
-exports.sendUpbitProjectExchangeFCM = function(notice){
+exports.sendUpbitProjectExchangeFCM = function(notice,title){
 
   var fcm_data = {
     //collapse_key: topic, 없어도 될듯
@@ -70,8 +70,8 @@ exports.sendUpbitProjectExchangeFCM = function(notice){
       topic:"exchange",
       exchange:'upbit',
       title: "업비트 프로젝트 공시 알림",
-      body: notice.text,
-      notice: notice,
+      body: title,
+      notice: parseUpbitProject(notice),
       type:2
     },
     priority: "high",
@@ -82,6 +82,20 @@ exports.sendUpbitProjectExchangeFCM = function(notice){
   console.log(fcm_data);
   testFCM(fcm_data);
   //sendTokensFcm('exchange',fcm_data)
+}
+
+
+function parseUpbitProject(object) {
+  return {
+    id: object.id,
+    assets: object.assets,
+    start_date: object.start_date,
+    text: object.text,
+    title: object.text,
+    url: object.url,
+    time: object.start_date,
+    timestamp: now()
+  };
 }
 
 function testFCM(fcm_data){
