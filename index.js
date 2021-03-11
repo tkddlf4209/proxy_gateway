@@ -90,7 +90,7 @@ function parsePosts(posts){
             // }
             
             var latest_title = ids.get(notice_id);
-            if (latest_title == undefined || latest_title.replace(/ /g, "") !== notice_title.replace(/ /g, "")) { // 신규프로젝트 공시 등장
+            if (latest_title == undefined) { // 신규프로젝트 공시 등장
                 console.log('프로젝트감지 ',posts[i]);
 
                 Object.keys(bot_sockets).forEach(function(socket_id){
