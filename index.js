@@ -37,8 +37,9 @@ io.on("connection", (socket) => {
     if(rsp.result == 'success'){
       var posts = rsp.data.data.posts;
       parsePosts(posts);
+    }else{
+      deleteSocket(socket); // not disconnect , only remove in socket_list
     }
-    
   });
 
   socket.on("disconnect", () => {
@@ -100,7 +101,7 @@ function deleteSocket(socket) {
 
   if(crawler_sockets.length > 0){
     running_crawler_socket = crawler_sockets[0];
-    io.to(running_crawler_socket.id).emit("start_crawler", { interval : 200 });
+    io.to(running_crawler_socket.id).emit("start_crawler", { interval : 250 });
   }else{
     running_crawler_socket = undefined;
     console.log('crawler socket legnth 0');
