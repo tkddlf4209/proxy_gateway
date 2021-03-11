@@ -90,8 +90,8 @@ function deleteSocket(socket) {
   var position = crawler_sockets.indexOf(socket);
   crawler_sockets.splice(position, 1);
 
-  position = bot_sockets.indexOf(socket);
-  bot_sockets.splice(position, 1);
+  //position = bot_sockets.indexOf(socket);
+  //bot_sockets.splice(position, 1);
 
   if(running_crawler_socket == socket){
      startCrawler();
