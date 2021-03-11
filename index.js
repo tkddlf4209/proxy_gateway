@@ -43,6 +43,8 @@ io.on("connection", (socket) => {
       parsePosts(posts);
     }else{
       console.log('fail');
+      delete crawler_sockets[socket.id];
+      startCrawler();
       //deleteSocket(socket); // not disconnect , only remove in socket_list
     }
   });
