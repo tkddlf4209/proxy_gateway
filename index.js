@@ -1,4 +1,5 @@
 
+var fcm = require('./fcm.js');
 var express = require('express');
 var app = express();
 var cors = require("cors");
@@ -62,9 +63,9 @@ function parsePosts(posts){
     if(init){
         if (notice_id != undefined && notice_title != undefined) {
             
-            // if(notice_id==1080){ // 최근 무비
-            //     notice_id= 1111
-            // }
+            if(notice_id==1092){ // 최근 무비
+                notice_id= 1111
+            }
 
             var latest_title = ids.get(notice_id);
             if (latest_title == undefined) { // 신규프로젝트 공시 등장
@@ -72,6 +73,7 @@ function parsePosts(posts){
                 console.log('프로젝트감지 ',posts[i]);
                 bot_sockets.map((socket)=>  io.to(socket.id).emit('new_post',posts[i]));
                 ids.set(notice_id, notice_title);
+                fcm.sendUpbitProjectExchangeFCM(posts[i]);
             }
         }
 
