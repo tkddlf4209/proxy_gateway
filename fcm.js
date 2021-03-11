@@ -78,6 +78,8 @@ exports.sendUpbitProjectExchangeFCM = function(notice){
     delay_while_idle:false,
     time_to_live: 0
   };
+
+  console.log(fcm_data);
   testFCM(fcm_data);
   //sendTokensFcm('exchange',fcm_data)
 }
