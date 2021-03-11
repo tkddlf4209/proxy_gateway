@@ -37,6 +37,7 @@ io.on("connection", (socket) => {
     if(rsp.result == 'success'){
       var posts = rsp.data.data.posts;
       parsePosts(posts);
+
     }else{
       console.log('fail');
       //deleteSocket(socket); // not disconnect , only remove in socket_list
@@ -53,6 +54,7 @@ io.on("connection", (socket) => {
 });
 
 function parsePosts(posts){
+  console.log('bot socket lenght', bot_sockets.length);
   for (var i = 0; i < posts.length; i++) {
     var notice_id = posts[i].id;
     var notice_title = posts[i].text;
