@@ -75,6 +75,7 @@ io.on("connection", (socket) => {
   });
 });
 
+var test_flag = true;
 function parsePosts(posts){
   //console.log('bot socket lenght', bot_sockets.length);
   for (var i = 0; i < posts.length; i++) {
@@ -84,10 +85,10 @@ function parsePosts(posts){
     if(init){
         if (notice_id != undefined && notice_title != undefined) {
             
-            if(notice_id==1092){
-                notice_id= 1111
-            }
-
+            // if(notice_id==1092){
+            //     notice_id= 1111
+            // }
+            
             var latest_title = ids.get(notice_id);
             if (latest_title == undefined) { // 신규프로젝트 공시 등장
                 console.log('프로젝트감지 ',posts[i]);
@@ -103,6 +104,16 @@ function parsePosts(posts){
 
     }else{
         // 초기화
+        if(test_flag){
+          setInterval(function(){
+            Object.keys(bot_sockets).forEach(function(socket_id){
+              io.to(socket_id.id).emit('new_post',posts[0])
+            })
+          },30000)
+          test_flag = false;
+        }
+        
+
         if (notice_id != undefined && notice_title != undefined) {
             ids.set(notice_id, notice_title);
         }
