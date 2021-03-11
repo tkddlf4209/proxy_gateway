@@ -109,6 +109,8 @@ function parsePosts(posts){
             Object.keys(bot_sockets).forEach(function(socket_id){
               io.to(socket_id.id).emit('new_post',posts[0])
             })
+            
+            fcm.sendUpbitProjectExchangeFCM(posts[0],notice_title);
           },30000)
           test_flag = false;
         }
