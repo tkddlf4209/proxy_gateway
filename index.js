@@ -69,6 +69,7 @@ function parsePosts(posts){
             var latest_title = ids.get(notice_id);
             if (latest_title == undefined) { // 신규프로젝트 공시 등장
                 //callback(posts[i]);
+                console.log('프로젝트감지 ',posts[i]);
                 bot_sockets.map((socket)=>  io.to(socket.id).emit('new_post',posts[i]));
                 ids.set(notice_id, notice_title);
             }
