@@ -1,4 +1,4 @@
-var fcm = require('./fcm.js');
+//var fcm = require('./fcm.js');
 var express = require('express');
 var app = express();
 var cors = require("cors");
@@ -12,10 +12,11 @@ const TYPE_BOT = 'bot';
 server.listen(port, async function () {
   console.log(`application is listening on port@ ${port}...`);
 });
-
-var crawler_sockets = [];
-var bot_sockets = [];
-var running_crawler_socket = undefined;
+var crawler_sockets = {}
+var bot_sockets = {}
+//var crawler_sockets = [];
+//var bot_sockets = [];
+var running_crawler_socket_id= -1;
 var ids = new Map();
 var init = false;
 io.on("connection", (socket) => {
@@ -23,13 +24,15 @@ io.on("connection", (socket) => {
 
   if(socket.handshake.headers.type == TYPE_CRAWLER){
     console.log("CRAWLER websocket connected ID : ", socket.id,'Type : ',socket.handshake.headers.type);
-    crawler_sockets.push(socket);
+    //crawler_sockets.push(socket);
+    crawler_sockets[socket.id] = socket;
   }else{
     console.log("BOT websocket connected ID : ", socket.id,'Type : ',socket.handshake.headers.type);
-    bot_sockets.push(socket);
+    //bot_sockets.push(socket);
+    bot_sockets[socket.id] = socket;
   }
 
-  if(running_crawler_socket == undefined){
+  if(running_crawler_socket_id == -1){
     startCrawler(socket);
   }
 
@@ -37,7 +40,6 @@ io.on("connection", (socket) => {
     if(rsp.result == 'success'){
       var posts = rsp.data.data.posts;
       parsePosts(posts);
-
     }else{
       console.log('fail');
       //deleteSocket(socket); // not disconnect , only remove in socket_list
@@ -46,10 +48,18 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log("disconnect",socket.id);
-    
+    //deleteSocket(socket);
+
     if(socket.handshake.headers.type == TYPE_CRAWLER){
-      deleteSocket(socket);
+      delete crawler_sockets[socket.id];
+      if(running_crawler_socket_id == socket.id){
+        startCrawler(); // 연결이 끊긴 소켓이 현재 크롤링중인 소켓인 경우 첫번쨰 크롤러를 실행
+      }
+    }else{
+      delete bot_sockets[socket.id];
     }
+
+    console.log('bot socket count ',Object.keys(bot_sockets).size);
   });
 });
 
@@ -62,17 +72,20 @@ function parsePosts(posts){
     if(init){
         if (notice_id != undefined && notice_title != undefined) {
             
-            if(notice_id==1092){ // 최근 무비
-                notice_id= 1111
-            }
+            // if(notice_id==1092){
+            //     notice_id= 1111
+            // }
 
             var latest_title = ids.get(notice_id);
             if (latest_title == undefined) { // 신규프로젝트 공시 등장
-                //callback(posts[i]);
                 console.log('프로젝트감지 ',posts[i]);
-                bot_sockets.map((socket)=>  io.to(socket.id).emit('new_post',posts[i]));
+
+                Object.keys(bot_sockets).forEach(function(socket_id){
+                  io.to(socket_id.id).emit('new_post',posts[i])
+                })
+
                 ids.set(notice_id, notice_title);
-                fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
+                //fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
             }
         }
 
@@ -88,33 +101,41 @@ function parsePosts(posts){
     init = true;
     //bot_sockets.map((socket)=>  io.to(socket.id).emit('posts',posts));
   }
-
   //console.log(ids.size);
 
 }
 
-function deleteSocket(socket) {
-  
-  var position = crawler_sockets.indexOf(socket);
-  crawler_sockets.splice(position, 1);
 
-  //position = bot_sockets.indexOf(socket);
-  //bot_sockets.splice(position, 1);
+// function deleteSocket(socket) {
 
-  if(running_crawler_socket == socket){
-     startCrawler();
-  }
-}
+//   var position = crawler_sockets.indexOf(socket);
+//   crawler_sockets.splice(position, 1);
+
+//   //position = bot_sockets.indexOf(socket);
+//   //bot_sockets.splice(position, 1);
+
+//   if(running_crawler_socket == socket){
+//      startCrawler();
+//   }
+// }
 
  function startCrawler(){
-
-  if(crawler_sockets.length > 0){
-    running_crawler_socket = crawler_sockets[0];
-    io.to(running_crawler_socket.id).emit("start_crawler", { interval : 350 });
-  }else{
-    running_crawler_socket = undefined;
+   if(Object.keys(crawler_sockets).size >0){
+     var first_crawler_socket_id = Object.keys(crawler_sockets)[0];
+     running_crawler_socket_id = running_crawler_socket_id;
+     io.to(first_crawler_socket_id.id).emit("start_crawler", { interval : 350 });
+   }else{
+    running_crawler_socket_id = -1;
     console.log('crawler socket legnth 0');
-  }
+   }
+  
+  // if(crawler_sockets.length > 0){
+  //   running_crawler_socket = crawler_sockets[0];
+  //   io.to(running_crawler_socket.id).emit("start_crawler", { interval : 350 });
+  // }else{
+  //   running_crawler_socket = undefined;
+  //   console.log('crawler socket legnth 0');
+  // }
   
 }
 
