@@ -69,8 +69,8 @@ exports.sendUpbitProjectExchangeFCM = function(notice){
     data: {
       topic:"exchange",
       exchange:'upbit',
-      title: "업비트 프로젝트 공시 알림 테스트",
-      body: notice.title,
+      title: "업비트 프로젝트 공시 알림",
+      body: notice.text,
       notice: notice,
       type:2
     },
