@@ -98,7 +98,7 @@ function parsePosts(posts){
                 })
 
                 ids.set(notice_id, notice_title);
-                //fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
+                fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
             }
         }
 
