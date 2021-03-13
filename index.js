@@ -159,7 +159,7 @@ function parsePosts(posts){
 // }
 
  function startCrawler(){
-
+ 
     if(running_crawler_socket_id == -1){
       if(Object.keys(crawler_sockets).length > 0){
         var first_crawler_socket_id = Object.keys(crawler_sockets)[0];
