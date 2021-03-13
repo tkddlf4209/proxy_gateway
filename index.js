@@ -100,7 +100,7 @@ function parsePosts(posts){
                 })
 
                 ids.set(notice_id, notice_title);
-                fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
+                //fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
             }
         }
 
@@ -152,7 +152,7 @@ function parsePosts(posts){
      var first_crawler_socket_id = Object.keys(crawler_sockets)[0];
      running_crawler_socket_id = first_crawler_socket_id;
      
-     console.log("cralwer_sockets : ",Object.keys(crawler_sockets).length, crawler_sockets,running_crawler_socket_id);
+     console.log("cralwer_sockets : ",Object.keys(crawler_sockets).length,running_crawler_socket_id,Object.keys(crawler_sockets));
      io.to(first_crawler_socket_id).emit("start_crawler", { interval : 350 });
    }else{
     running_crawler_socket_id = -1;
