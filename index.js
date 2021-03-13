@@ -168,7 +168,7 @@ function parsePosts(posts){
         io.to(first_crawler_socket_id).emit("start_crawler", { interval : 350 });
       }
     }else{
-      io.to(socket_id).emit("start_crawler", { interval : 350 });
+      io.to(running_crawler_socket_id).emit("start_crawler", { interval : 350 });
     }
 
   // if(crawler_sockets.length > 0){
