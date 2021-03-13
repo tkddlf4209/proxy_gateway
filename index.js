@@ -41,7 +41,7 @@ io.on("connection", (socket) => {
   socket.on("notice", (rsp) => {
     if(rsp.result == 'success'){
       var posts = rsp.data.data.posts;
-      console.log(posts.length);
+      //console.log(posts.length);
       parsePosts(posts);
     }else{
       console.log('notice fail');
@@ -56,7 +56,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    //console.log("disconnect",socket.id);
+    console.log("disconnect",socket.id);
     //deleteSocket(socket);
 
     if(socket.handshake.headers.type == TYPE_CRAWLER){
