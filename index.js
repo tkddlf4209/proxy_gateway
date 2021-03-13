@@ -28,9 +28,9 @@ io.on("connection", (socket) => {
     //crawler_sockets.push(socket);
     crawler_sockets[socket.id] = socket;
     if(running_crawler_socket_id == -1){
-      running_crawler_socket_id= socket;
+      running_crawler_socket_id= socket.id;
     }
-    startCrawler(socket.id);
+    startCrawler(running_crawler_socket_id);
   }else if (socket.handshake.headers.type == TYPE_BOT){
     console.log("BOT websocket connected ID : ", socket.id);
     //bot_sockets.push(socket);
@@ -58,12 +58,13 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("disconnect",socket.id);
     //deleteSocket(socket);
-    if(running_crawler_socket_id == socket.id){
-      running_crawler_socket_id= -1;
-    }
-
+    
     if(socket.handshake.headers.type == TYPE_CRAWLER){
       delete crawler_sockets[socket.id];
+
+      if(running_crawler_socket_id == socket.id){
+        running_crawler_socket_id= -1;
+      }
       startCrawler(running_crawler_socket_id); // 연결이 끊긴 소켓이 현재 크롤링중인 소켓인 경우 첫번쨰 크롤러를 실행
       console.log('cralwer socket disconnect , count ',Object.keys(crawler_sockets).length);
     }else if (socket.handshake.headers.type == TYPE_BOT){
