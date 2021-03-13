@@ -17,10 +17,7 @@ function now(){
 server.listen(port, async function () {
   console.log(`application is listening on port@ ${port}...`);
 });
-//var crawler_sockets = {}
 var bot_sockets = {}
-//var crawler_sockets = [];
-//var bot_sockets = [];
 var running_crawler_socket_id= -1;
 var ids = new Map();
 var init = false;
@@ -29,12 +26,8 @@ io.on("connection", (socket) => {
 
   if(socket.handshake.headers.type == TYPE_CRAWLER){
     console.log("CRAWLER websocket connected ID : ", socket.id);
-    //crawler_sockets.push(socket);
-    //socket.time = now();
-    //crawler_sockets[socket.id] = socket;
   }else if (socket.handshake.headers.type == TYPE_BOT){
     console.log("BOT websocket connected ID : ", socket.id);
-    //bot_sockets.push(socket);
     bot_sockets[socket.id] = socket;
   }else if (socket.handshake.headers.type == TYPE_ASSIST){
     console.log("TYPE_ASSIST websocket connected ID : ");
@@ -53,12 +46,8 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    //console.log("disconnect",socket.id);
-    //deleteSocket(socket);
     if(socket.handshake.headers.type == TYPE_CRAWLER){
       console.log('cralwer socket disconnect , id : ',socket.id);
-      //delete crawler_sockets[socket.id];
-      //startCrawler();
     }else if (socket.handshake.headers.type == TYPE_BOT){
       delete bot_sockets[socket.id];
       console.log('bot socket disconnect , count ',Object.keys(bot_sockets).length);
@@ -69,9 +58,7 @@ io.on("connection", (socket) => {
   });
 });
 
-//var test_flag = true;
 function parsePosts(posts){
-  //console.log('bot socket lenght', bot_sockets.length);
   for (var i = 0; i < posts.length; i++) {
     var notice_id = posts[i].id;
     var notice_title = posts[i].text;
@@ -92,7 +79,7 @@ function parsePosts(posts){
                 })
 
                 ids.set(notice_id, notice_title);
-                //fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
+                fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
             }
         }
 
@@ -123,43 +110,3 @@ function parsePosts(posts){
   //console.log(ids.size);
 
 }
-
-
-// function deleteSocket(socket) {
-
-//   var position = crawler_sockets.indexOf(socket);
-//   crawler_sockets.splice(position, 1);
-
-//   //position = bot_sockets.indexOf(socket);
-//   //bot_sockets.splice(position, 1);
-
-//   if(running_crawler_socket == socket){
-//      startCrawler();
-//   }
-// }
-
-
- function startCrawler(){
-    console.log("startCrawler #########################",Object.keys(crawler_sockets).length,running_crawler_socket_id);
-    if(running_crawler_socket_id == -1){
-      if(Object.keys(crawler_sockets).length > 0){
-        var first_crawler_socket_id = Object.keys(crawler_sockets)[0];
-        running_crawler_socket_id = first_crawler_socket_id;
-        console.log("cralwer_sockets : ",Object.keys(crawler_sockets).length,running_crawler_socket_id,Object.keys(crawler_sockets));
-        io.to(first_crawler_socket_id).emit("start_crawler", { interval : 350 });
-      }
-    }else{
-      console.log("########################################",running_crawler_socket_id);
-      io.to(running_crawler_socket_id).emit("start_crawler", { interval : 350 });
-    }
-
-  // if(crawler_sockets.length > 0){
-  //   running_crawler_socket = crawler_sockets[0];
-  //   io.to(running_crawler_socket.id).emit("start_crawler", { interval : 350 });
-  // }else{
-  //   running_crawler_socket = undefined;
-  //   console.log('crawler socket legnth 0');
-  // }
-  
-}
-
