@@ -28,7 +28,8 @@ io.on("connection", (socket) => {
     //crawler_sockets.push(socket);
     crawler_sockets[socket.id] = socket;
     if(running_crawler_socket_id == -1){
-      startCrawler(socket.id);
+      running_crawler_socket_id = socket.id;
+      startCrawler();
     }
   }else if (socket.handshake.headers.type == TYPE_BOT){
     console.log("BOT websocket connected ID : ", socket.id);
@@ -44,10 +45,17 @@ io.on("connection", (socket) => {
       //console.log(posts.length);
       parsePosts(posts);
     }else{
-      console.log('notice fail');
-      delete crawler_sockets[socket.id];
+      console.log('notice fail',socket.id);
+
+      var next =false;
       if(running_crawler_socket_id == socket.id){
-        startCrawler(-1);
+        running_crawler_socket_id = -1;
+        next = true;
+      }
+      delete crawler_sockets[socket.id];
+
+      if(next){
+        startCrawler();
       }
       //deleteSocket(socket); // not disconnect , only remove in socket_list
     }
@@ -58,11 +66,19 @@ io.on("connection", (socket) => {
     //deleteSocket(socket);
     
     if(socket.handshake.headers.type == TYPE_CRAWLER){
-      delete crawler_sockets[socket.id];
+      var next =false;
+      console.log('cralwer socket disconnect , id : ',socket.id);
       if(running_crawler_socket_id == socket.id){
-        startCrawler(-1);
+        running_crawler_socket_id = -1;
+        next = true;
       }
-      console.log('cralwer socket disconnect , count ',Object.keys(crawler_sockets).length);
+      delete crawler_sockets[socket.id];
+
+      if(next){
+        startCrawler();
+      }
+
+      
     }else if (socket.handshake.headers.type == TYPE_BOT){
       delete bot_sockets[socket.id];
       console.log('bot socket disconnect , count ',Object.keys(bot_sockets).length);
@@ -142,9 +158,9 @@ function parsePosts(posts){
 //   }
 // }
 
- function startCrawler(socket_id){
+ function startCrawler(){
 
-    if(socket_id == -1){
+    if(running_crawler_socket_id == -1){
       if(Object.keys(crawler_sockets).length > 0){
         var first_crawler_socket_id = Object.keys(crawler_sockets)[0];
         running_crawler_socket_id = first_crawler_socket_id;
