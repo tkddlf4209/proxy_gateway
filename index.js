@@ -47,8 +47,9 @@ io.on("connection", (socket) => {
       parsePosts(posts);
     }else{
       console.log('notice fail');
-      if(socket.handshake.headers.type == TYPE_CRAWLER){
+      if(socket.handshake.headers.type == TYPE_CRAWLER && running_crawler_socket_id == socket.id){
         delete crawler_sockets[socket.id];
+        running_crawler_socket_id= -1;
         startCrawler();
       }
       //deleteSocket(socket); // not disconnect , only remove in socket_list
@@ -98,7 +99,7 @@ function parsePosts(posts){
                 })
 
                 ids.set(notice_id, notice_title);
-                fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
+                //fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
             }
         }
 
