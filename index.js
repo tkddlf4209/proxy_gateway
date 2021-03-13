@@ -10,10 +10,14 @@ const TYPE_CRAWLER = 'crawler';
 const TYPE_BOT = 'bot';
 const TYPE_ASSIST = 'assist';
 
+function now(){
+  return  Date.now();
+}
+
 server.listen(port, async function () {
   console.log(`application is listening on port@ ${port}...`);
 });
-var crawler_sockets = {}
+//var crawler_sockets = {}
 var bot_sockets = {}
 //var crawler_sockets = [];
 //var bot_sockets = [];
@@ -26,11 +30,8 @@ io.on("connection", (socket) => {
   if(socket.handshake.headers.type == TYPE_CRAWLER){
     console.log("CRAWLER websocket connected ID : ", socket.id);
     //crawler_sockets.push(socket);
-    crawler_sockets[socket.id] = socket;
-    if(running_crawler_socket_id == -1){
-      running_crawler_socket_id = socket.id;
-      startCrawler();
-    }
+    //socket.time = now();
+    //crawler_sockets[socket.id] = socket;
   }else if (socket.handshake.headers.type == TYPE_BOT){
     console.log("BOT websocket connected ID : ", socket.id);
     //bot_sockets.push(socket);
@@ -38,46 +39,26 @@ io.on("connection", (socket) => {
   }else if (socket.handshake.headers.type == TYPE_ASSIST){
     console.log("TYPE_ASSIST websocket connected ID : ");
   }
+  
+  socket.on("start_crawler", (rsp) => {
+    recent_start_cralwer = socket.id;
+  })
 
   socket.on("notice", (rsp) => {
     if(rsp.result == 'success'){
       var posts = rsp.data.data.posts;
       //console.log(posts.length);
       parsePosts(posts);
-    }else{
-      console.log('notice fail',socket.id);
-
-      var next =false;
-      if(running_crawler_socket_id == socket.id){
-        running_crawler_socket_id = -1;
-        next = true;
-      }
-      delete crawler_sockets[socket.id];
-
-      if(next){
-        startCrawler();
-      }
-      //deleteSocket(socket); // not disconnect , only remove in socket_list
     }
   });
 
   socket.on("disconnect", () => {
-    console.log("disconnect",socket.id);
+    //console.log("disconnect",socket.id);
     //deleteSocket(socket);
-    
     if(socket.handshake.headers.type == TYPE_CRAWLER){
-      var next =false;
       console.log('cralwer socket disconnect , id : ',socket.id);
-      if(running_crawler_socket_id == socket.id){
-        running_crawler_socket_id = -1;
-        next = true;
-      }
-      delete crawler_sockets[socket.id];
-
-      if(next){
-        startCrawler();
-      }
-
+      //delete crawler_sockets[socket.id];
+      //startCrawler();
     }else if (socket.handshake.headers.type == TYPE_BOT){
       delete bot_sockets[socket.id];
       console.log('bot socket disconnect , count ',Object.keys(bot_sockets).length);
@@ -157,9 +138,9 @@ function parsePosts(posts){
 //   }
 // }
 
+
  function startCrawler(){
     console.log("startCrawler #########################",Object.keys(crawler_sockets).length,running_crawler_socket_id);
-        
     if(running_crawler_socket_id == -1){
       if(Object.keys(crawler_sockets).length > 0){
         var first_crawler_socket_id = Object.keys(crawler_sockets)[0];
