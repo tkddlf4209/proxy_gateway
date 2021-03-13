@@ -27,7 +27,7 @@ io.on("connection", (socket) => {
     console.log("CRAWLER websocket connected ID : ", socket.id);
     //crawler_sockets.push(socket);
     crawler_sockets[socket.id] = socket;
-    if(running_crawler_socket_id != -1){
+    if(running_crawler_socket_id == -1){
       startCrawler(socket);
     }
   }else if (socket.handshake.headers.type == TYPE_BOT){
