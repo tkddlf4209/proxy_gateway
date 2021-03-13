@@ -78,7 +78,6 @@ io.on("connection", (socket) => {
         startCrawler();
       }
 
-      
     }else if (socket.handshake.headers.type == TYPE_BOT){
       delete bot_sockets[socket.id];
       console.log('bot socket disconnect , count ',Object.keys(bot_sockets).length);
@@ -159,7 +158,7 @@ function parsePosts(posts){
 // }
 
  function startCrawler(){
-    console.log("startCrawler ###",Object.keys(crawler_sockets).length,running_crawler_socket_id);
+    console.log("startCrawler #########################",Object.keys(crawler_sockets).length,running_crawler_socket_id);
         
     if(running_crawler_socket_id == -1){
       if(Object.keys(crawler_sockets).length > 0){
@@ -169,6 +168,7 @@ function parsePosts(posts){
         io.to(first_crawler_socket_id).emit("start_crawler", { interval : 350 });
       }
     }else{
+      console.log("########################################",running_crawler_socket_id);
       io.to(running_crawler_socket_id).emit("start_crawler", { interval : 350 });
     }
 
