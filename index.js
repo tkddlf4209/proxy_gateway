@@ -147,7 +147,7 @@ function parsePosts(posts){
  function startCrawler(){
    if(Object.keys(crawler_sockets).length >0){
      var first_crawler_socket_id = Object.keys(crawler_sockets)[0];
-     running_crawler_socket_id = running_crawler_socket_id;
+     running_crawler_socket_id = first_crawler_socket_id;
      io.to(first_crawler_socket_id).emit("start_crawler", { interval : 350 });
    }else{
     running_crawler_socket_id = -1;
