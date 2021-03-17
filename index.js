@@ -10,15 +10,10 @@ const TYPE_CRAWLER = 'crawler';
 const TYPE_BOT = 'bot';
 const TYPE_ASSIST = 'assist';
 
-function now(){
-  return  Date.now();
-}
-
 server.listen(port, async function () {
   console.log(`application is listening on port@ ${port}...`);
 });
 var bot_sockets = {}
-var running_crawler_socket_id= -1;
 var ids = new Map();
 var init = false;
 io.on("connection", (socket) => {
@@ -61,6 +56,7 @@ io.on("connection", (socket) => {
 function parsePosts(posts){
   for (var i = 0; i < posts.length; i++) {
     var notice_id = posts[i].id;
+    posts[i].text = "["+posts[i].assets+"]"+posts[i].text; // 타이틀 앞에 심볼 값 추가
     var notice_title = posts[i].text;
 
     if(init){
