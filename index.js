@@ -55,14 +55,18 @@ io.on("connection", (socket) => {
 
 function parsePosts(posts){
 
-  if(posts.length <5){
+  if(posts.length != 20){
+    console.log('post length not 20!!!');
     return
   }
 
   for (var i = 0; i < 5; i++) {
     var notice_id = posts[i].id;
-    posts[i].text = "["+posts[i].assets+"]"+posts[i].text; // 타이틀 앞에 심볼 값 추가
+    posts[i].text = "("+posts[i].assets+")"+posts[i].text; // 타이틀 앞에 심볼 값 추가
     var notice_title = posts[i].text;
+    if(init==false){
+      console.log(notice_title);
+    }
 
     if(init){
         if (notice_id != undefined && notice_title != undefined) {
@@ -105,7 +109,6 @@ function parsePosts(posts){
 
   if(init==false && posts.length>=20){
     init = true;
-    console.log(posts);
     //bot_sockets.map((socket)=>  io.to(socket.id).emit('posts',posts));
   }
   //console.log(ids.size);
