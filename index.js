@@ -64,9 +64,7 @@ function parsePosts(posts){
     var notice_id = posts[i].id;
     posts[i].text = "("+posts[i].assets+")"+posts[i].text; // 타이틀 앞에 심볼 값 추가
     var notice_title = posts[i].text;
-    if(init==false){
-      console.log(notice_title);
-    }
+
 
     if(init){
         if (notice_id != undefined && notice_title != undefined) {
