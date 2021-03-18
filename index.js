@@ -69,9 +69,9 @@ function parsePosts(posts){
     if(init){
         if (notice_id != undefined && notice_title != undefined) {
             
-            // if(notice_id==1092){
-            //     notice_id= 1111
-            // }
+            if(notice_id==1112){
+                notice_id= 1
+            }
             
             var latest_title = ids.get(notice_id);
             if (latest_title == undefined) { // 신규프로젝트 공시 등장
