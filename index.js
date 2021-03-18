@@ -60,55 +60,42 @@ function parsePosts(posts){
     return
   }
 
-  for (var i = 0; i < 5; i++) {
-    var notice_id = posts[i].id;
-    posts[i].text = "("+posts[i].assets+")"+posts[i].text; // 타이틀 앞에 심볼 값 추가
-    var notice_title = posts[i].text;
-
-
-    if(init){
-        if (notice_id != undefined && notice_title != undefined) {
-            
-            // if(notice_id==1112){
-            //     notice_id= 1
-            // }
-            
-            var latest_title = ids.get(notice_id);
-            if (latest_title == undefined) { // 신규프로젝트 공시 등장
-                console.log('프로젝트감지 ',posts[i]);
-                Object.keys(bot_sockets).forEach(function(socket_id){
-                  io.to(socket_id).emit('new_post',posts[i])
-                })
-
-                ids.set(notice_id, notice_title);
-                //fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
-            }
-        }
-
-    }else{
-        // 초기화
-        // if(test_flag){
-        //   setInterval(function(){
-        //     Object.keys(bot_sockets).forEach(function(socket_id){
-        //       io.to(socket_id).emit('new_post',posts[0])
-        //     })
-            
-        //     fcm.sendUpbitProjectExchangeFCM(posts[0],notice_title);
-        //   },30000)
-        //   test_flag = false;
+  if(init){
+    for (var i = 0; i < 5; i++) {
+      var notice_id = posts[i].id;
+      posts[i].text = "("+posts[i].assets+")"+posts[i].text; // 타이틀 앞에 심볼 값 추가
+      var notice_title = posts[i].text;
+      if (notice_id != undefined && notice_title != undefined) {
+              
+        // if(notice_id==1112){
+        //     notice_id= 1
         // }
         
+        var latest_title = ids.get(notice_id);
+        if (latest_title == undefined) { // 신규프로젝트 공시 등장
+            console.log('프로젝트감지 ',posts[i]);
+            Object.keys(bot_sockets).forEach(function(socket_id){
+              io.to(socket_id).emit('new_post',posts[i])
+            })
 
-        if (notice_id != undefined && notice_title != undefined) {
             ids.set(notice_id, notice_title);
+            //fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
         }
+      }
     }
+  }else{
+    for (var i = 0; i < posts.length; i++) {
+      var notice_id = posts[i].id;
+      posts[i].text = "("+posts[i].assets+")"+posts[i].text; // 타이틀 앞에 심볼 값 추가
+      var notice_title = posts[i].text;
+  
+      if (notice_id != undefined && notice_title != undefined) {
+        ids.set(notice_id, notice_title);
+      }
+    }
+    init = true;
   }
 
-  if(init==false && posts.length>=20){
-    init = true;
-    //bot_sockets.map((socket)=>  io.to(socket.id).emit('posts',posts));
-  }
   //console.log(ids.size);
 
 }
