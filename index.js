@@ -103,8 +103,9 @@ function parsePosts(posts){
     }
   }
 
-  if(posts.length>0){
+  if(init==false && posts.length>=20){
     init = true;
+    console.log(posts);
     //bot_sockets.map((socket)=>  io.to(socket.id).emit('posts',posts));
   }
   //console.log(ids.size);
