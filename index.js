@@ -35,7 +35,7 @@ io.on("connection", (socket) => {
   socket.on("notice", (rsp) => {
     if(rsp.result == 'success'){
       var posts = rsp.data.data.posts;
-      console.log(posts.length);
+      console.log(posts.length,ids.size);
       parsePosts(posts);
     }
   });
@@ -54,7 +54,12 @@ io.on("connection", (socket) => {
 });
 
 function parsePosts(posts){
-  for (var i = 0; i < posts.length; i++) {
+
+  if(posts.length <5){
+    return
+  }
+
+  for (var i = 0; i < 5; i++) {
     var notice_id = posts[i].id;
     posts[i].text = "["+posts[i].assets+"]"+posts[i].text; // 타이틀 앞에 심볼 값 추가
     var notice_title = posts[i].text;
@@ -69,13 +74,12 @@ function parsePosts(posts){
             var latest_title = ids.get(notice_id);
             if (latest_title == undefined) { // 신규프로젝트 공시 등장
                 console.log('프로젝트감지 ',posts[i]);
-
                 Object.keys(bot_sockets).forEach(function(socket_id){
                   io.to(socket_id).emit('new_post',posts[i])
                 })
 
                 ids.set(notice_id, notice_title);
-                fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
+                //fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
             }
         }
 
