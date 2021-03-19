@@ -76,7 +76,7 @@ function parsePosts(posts){
         }
         
         var check_title_from_id = ids.get(notice_id); // 새로운 공지 아이디 인지 체크
-        var check_title_from_title = ids.get(notice_title) // 새로운 공지 제목인지 체크
+        var check_title_from_title = titles.get(notice_title) // 새로운 공지 제목인지 체크
         if (check_title_from_id == undefined && check_title_from_title == undefined) { // 신규프로젝트 공시 등장
             var today = checkToday(posts[i].start_date.split("T")[0]) // 알림 발생 시간이 오늘인지 검사
             if(today){ // 오늘자 공시 만 알림 발생
