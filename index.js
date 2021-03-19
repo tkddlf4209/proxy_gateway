@@ -86,9 +86,9 @@ function parsePosts(posts){
                 })
                 
                 //fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
-              }else{
-                console.log('!!!! new post is not today notice !!!!!',posts[i]);
               }
+            }else{
+              console.log('!!!! new post is not today notice !!!!!',posts[i]);
             }
             ids.set(notice_id, notice_title);
         }
