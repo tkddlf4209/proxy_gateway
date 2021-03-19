@@ -89,10 +89,9 @@ function parsePosts(posts){
             }else{
               console.log('!!!! new post is not today notice !!!!!',posts[i]);
             }
-            
-            titles.set(notice_title,notice_id);
-            ids.set(notice_id, notice_title);
         }
+        titles.set(notice_title,notice_id);
+        ids.set(notice_id, notice_title);
       }
     }
   }else{
