@@ -98,7 +98,8 @@ function parsePosts(posts){
       var notice_id = posts[i].id;
       posts[i].text = "("+posts[i].assets+")"+posts[i].text; // 타이틀 앞에 심볼 값 추가
       var notice_title = posts[i].text;
-      //console.log(posts[i].start_date.split("T")[0],today);
+      var today = checkToday(posts[i].start_date.split("T")[0]) // 알림 발생 시간이 오늘인지 검사
+          
       if (notice_id != undefined && notice_title != undefined) {
         ids.set(notice_id, notice_title);
         init_max_notice_id = Math.max(init_max_notice_id,notice_id); // init 처음 가장 큰 notice id를 저장 // 이 id보다 작은 경우 무시.
