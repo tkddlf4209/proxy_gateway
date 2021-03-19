@@ -71,22 +71,23 @@ function parsePosts(posts){
       var notice_title = posts[i].text;
       if (notice_id != undefined && notice_title != undefined) {
               
-        if(notice_id==1112){
+        if(notice_id==582){
             notice_id= 1
         }
         
         var latest_title = ids.get(notice_id);
         if (latest_title == undefined) { // 신규프로젝트 공시 등장
-            
             var today = checkToday(posts[i].start_date.split("T")[0]) // 알림 발생 시간이 오늘인지 검사
             if(today){ // 오늘자 공시 만 알림 발생
-              if(notice_id > init_max_notice_id){ // 최근 공지 사항 아이디 보다 큰 경우 만 알림 발생
+              if(notice_id > init_max_notice_id){ // 최초 init 시 notice_id 최대 공지 사항 아이디 보다 큰 경우 만 알림 발생
                 console.log('프로젝트감지 ',posts[i]);
                 Object.keys(bot_sockets).forEach(function(socket_id){
                   io.to(socket_id).emit('new_post',posts[i])
                 })
                 
                 //fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
+              }else{
+                console.log('!!!! new post is not today notice !!!!!',posts[i]);
               }
             }
             ids.set(notice_id, notice_title);
@@ -109,7 +110,7 @@ function parsePosts(posts){
   }
 
   function checkToday(start_date){
-    console.log(moment());
+    //console.log(moment());
     return moment(start_date).isSame(moment(), 'day');
     
   }
