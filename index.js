@@ -73,6 +73,7 @@ function parsePosts(posts){
       if (notice_id != undefined && notice_title != undefined) {
         if(notice_id==582){
             notice_id= 1
+            notice_title= "test"
         }
         
         var check_title_from_id = ids.get(notice_id); // 새로운 공지 아이디 인지 체크
@@ -104,7 +105,7 @@ function parsePosts(posts){
       }
     }
 
-    console.log(titles);
+    //console.log(titles);
     init = true;
   }
 
