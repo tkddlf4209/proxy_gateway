@@ -74,6 +74,7 @@ function parsePosts(posts){
         if(notice_id==582){
             notice_id= 1
             notice_title= "test"
+            posts[i].start_date = "2021-03-19T00:00:00+09:00";
         }
         
         var check_title_from_id = ids.get(notice_id); // 새로운 공지 아이디 인지 체크
