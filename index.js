@@ -71,11 +71,11 @@ function parsePosts(posts){
       var notice_id = posts[i].id;
       var notice_title = posts[i].text;
       if (notice_id != undefined && notice_title != undefined) {
-        if(notice_id==582){
-            notice_id= 1
-            notice_title= "test"
-            posts[i].start_date = "2021-03-19T00:00:00+09:00";
-        }
+        // if(notice_id==582){
+        //     notice_id= 1
+        //     notice_title= "test"
+        //     posts[i].start_date = "2021-03-19T00:00:00+09:00";
+        // }
         
         var check_title_from_id = ids.get(notice_id); // 새로운 공지 아이디 인지 체크
         var check_title_from_title = titles.get(notice_title) // 새로운 공지 제목인지 체크
@@ -84,10 +84,10 @@ function parsePosts(posts){
             if(today){ // 오늘자 공시 만 알림 발생
                 console.log('프로젝트감지 ',posts[i]);
                 posts[i].text = "("+posts[i].assets+")"+posts[i].text; // 타이틀 앞에 심볼 값 추가
-                // Object.keys(bot_sockets).forEach(function(socket_id){
-                //   io.to(socket_id).emit('new_post',posts[i])
-                // })
-                //fcm.sendUpbitProjectExchangeFCM(posts[i],posts[i].text);
+                Object.keys(bot_sockets).forEach(function(socket_id){
+                  io.to(socket_id).emit('new_post',posts[i])
+                })
+                fcm.sendUpbitProjectExchangeFCM(posts[i],posts[i].text);
             }else{
               console.log('!!!! new post is not today notice !!!!!',posts[i]);
             }
