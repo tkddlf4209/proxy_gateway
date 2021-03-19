@@ -10,6 +10,10 @@ const TYPE_CRAWLER = 'crawler';
 const TYPE_BOT = 'bot';
 const TYPE_ASSIST = 'assist';
 
+var moment = require('moment');
+require('moment-timezone');
+moment.tz.setDefault("Asia/Seoul");
+
 server.listen(port, async function () {
   console.log(`application is listening on port@ ${port}...`);
 });
@@ -52,7 +56,7 @@ io.on("connection", (socket) => {
 
   });
 });
-
+var init_max_notice_id = -1;
 function parsePosts(posts){
 
   if(posts.length != 20){
@@ -67,19 +71,25 @@ function parsePosts(posts){
       var notice_title = posts[i].text;
       if (notice_id != undefined && notice_title != undefined) {
               
-        // if(notice_id==1112){
-        //     notice_id= 1
-        // }
+        if(notice_id==1112){
+            notice_id= 1
+        }
         
         var latest_title = ids.get(notice_id);
         if (latest_title == undefined) { // 신규프로젝트 공시 등장
-            console.log('프로젝트감지 ',posts[i]);
-            Object.keys(bot_sockets).forEach(function(socket_id){
-              io.to(socket_id).emit('new_post',posts[i])
-            })
-
+            
+            var today = checkToday(posts[i].start_date.split("T")[0]) // 알림 발생 시간이 오늘인지 검사
+            if(today){ // 오늘자 공시 만 알림 발생
+              if(notice_id > init_max_notice_id){ // 최근 공지 사항 아이디 보다 큰 경우 만 알림 발생
+                console.log('프로젝트감지 ',posts[i]);
+                Object.keys(bot_sockets).forEach(function(socket_id){
+                  io.to(socket_id).emit('new_post',posts[i])
+                })
+                
+                //fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
+              }
+            }
             ids.set(notice_id, notice_title);
-            fcm.sendUpbitProjectExchangeFCM(posts[i],notice_title);
         }
       }
     }
@@ -88,14 +98,20 @@ function parsePosts(posts){
       var notice_id = posts[i].id;
       posts[i].text = "("+posts[i].assets+")"+posts[i].text; // 타이틀 앞에 심볼 값 추가
       var notice_title = posts[i].text;
-  
+      //console.log(posts[i].start_date.split("T")[0],today);
       if (notice_id != undefined && notice_title != undefined) {
         ids.set(notice_id, notice_title);
+        init_max_notice_id = Math.max(init_max_notice_id,notice_id); // init 처음 가장 큰 notice id를 저장 // 이 id보다 작은 경우 무시.
       }
     }
     init = true;
   }
 
+  function checkToday(start_date){
+    console.log(moment());
+    return moment(start_date).isSame(moment(), 'day');
+    
+  }
   //console.log(ids.size);
 
 }
