@@ -6,8 +6,6 @@ var moment = require('moment');
 require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
 
-
-
 function sendTokensFcm(topic,fcm_data) { // 500개의 토큰 
 
   var fcm_count = 0;
@@ -85,6 +83,24 @@ exports.sendUpbitProjectExchangeFCM = function(notice,title){
   sendTokensFcm('exchange',fcm_data)
 }
 
+exports.sendProNoticeFcm = function (proNotice) {
+
+  var fcm_data = {
+    data: {
+      topic: "proNotice",
+      title: "title",/* not used*/
+      body: "body", /* not used*/
+      proNotice: proNotice
+    },
+    priority: "high",
+    delay_while_idle: false,
+    time_to_live: 0
+  };
+  
+  //console.log(fcm_data);
+  //testSend(fcm_data,'cMIozIfgvtg:APA91bEVto4S6Los6JmWhP-H7H8860DaE-cKVlTPMXGYc2pCMsPB1PbTOr-1acX0qWRb-2oZGogb5Zjct94eh1R54QiEiyAwzWiOU2Q3Co19p9ob9gTlRKn1vQ9rl0JuZPrzJLEQivxS');
+  sendTokensFcm('proNotice', fcm_data)
+}
 
 function parseUpbitProject(object) {
   return {
