@@ -190,6 +190,7 @@ function elonmusk(client) {
           tweet_id = tweet.id;
         } else {
           if (tweet_id < tweet.id) {
+            tweet_id =  tweet.id;
 
             var tweet_type = undefined;
             if (tweet.in_reply_to_status_id) {
