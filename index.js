@@ -102,7 +102,7 @@ setInterval(function(){
   if(i>=3){
     i=0;
   }
-},10000);
+},300);
 
 var init_max_notice_id = -1;
 function parsePosts(posts) {
@@ -185,14 +185,11 @@ function elonmusk(client) {
         // });
 
         var tweet = tweets[0];
-        var id = tweet.id;
-        var text = tweet.full_text;
-        var created_at = tweet.created_at;
         // init
         if (tweet_id == '') {
           tweet_id = tweet.id;
         } else {
-          if (tweet_id == tweet.id) {
+          if (tweet_id < tweet.id) {
 
             var tweet_type = undefined;
             if (tweet.in_reply_to_status_id) {

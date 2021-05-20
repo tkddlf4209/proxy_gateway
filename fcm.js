@@ -12,6 +12,11 @@ function sendTokensFcm(topic,fcm_data) { // 500개의 토큰
   var acc_fcm_count = 0;
   var i = 0;
   var tokens = [];
+
+  if(!firebase.users){
+    return;
+  }
+
   var user_length = firebase.users.size;
 
   firebase.users.forEach((value) => {
@@ -96,7 +101,7 @@ exports.sendProNoticeFcm = function (proNotice) {
     delay_while_idle: false,
     time_to_live: 0
   };
-  
+
   //console.log(fcm_data);
   //testSend(fcm_data,'cMIozIfgvtg:APA91bEVto4S6Los6JmWhP-H7H8860DaE-cKVlTPMXGYc2pCMsPB1PbTOr-1acX0qWRb-2oZGogb5Zjct94eh1R54QiEiyAwzWiOU2Q3Co19p9ob9gTlRKn1vQ9rl0JuZPrzJLEQivxS');
   sendTokensFcm('proNotice', fcm_data)
