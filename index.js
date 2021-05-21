@@ -43,10 +43,12 @@ var client10 = new Twitter({
 server.listen(port, async function () {
   console.log(`application is listening on port@ ${port}...`);
 });
+
 var bot_sockets = {}
 var ids = new Map();
 var titles = new Map();
 var init = false;
+
 io.on("connection", (socket) => {
   console.log("websocket connected ID : ", socket.id, 'Type : ', socket.handshake.headers.type);
 
@@ -58,10 +60,6 @@ io.on("connection", (socket) => {
   } else if (socket.handshake.headers.type == TYPE_ASSIST) {
     console.log("TYPE_ASSIST websocket connected ID : ");
   }
-
-  socket.on("start_crawler", (rsp) => {
-    recent_start_cralwer = socket.id;
-  })
 
   socket.on("notice", (rsp) => {
     if (rsp.result == 'success') {
@@ -77,34 +75,35 @@ io.on("connection", (socket) => {
     } else if (socket.handshake.headers.type == TYPE_BOT) {
       delete bot_sockets[socket.id];
       console.log('bot socket disconnect , count ', Object.keys(bot_sockets).length);
-    } else if (socket.handshake.headers.type == TYPE_BOT) {
-      console.log('assist socket disconnect');
     }
-
   });
 });
 
-var i = 0;
-setInterval(function(){
-  switch (i) {
-    case 0:
-      elonmusk(client8);
-      break;
-    case 1:
-      elonmusk(client9);
-      break;
-    case 2:
-      elonmusk(client10);
-      break;
-  }
+function startElonmuskTwitterCrawler() {
+  console.log('startElonmuskTwitterCrawler');
+  var i = 0;
+  setInterval(function () {
+    switch (i) {
+      case 0:
+        elonmusk(client8);
+        break;
+      case 1:
+        elonmusk(client9);
+        break;
+      case 2:
+        elonmusk(client10);
+        break;
+    }
 
-  i++;
-  if(i>=3){
-    i=0;
-  }
-},1000);
+    i++;
+    if (i >= 3) {
+      i = 0;
+    }
+  }, 1000);
+}
 
-var init_max_notice_id = -1;
+startElonmuskTwitterCrawler();
+
 function parsePosts(posts) {
 
   if (posts.length != 20) {
@@ -165,7 +164,6 @@ function parsePosts(posts) {
 
 }
 
-
 var tweet_id = '';
 function elonmusk(client) {
 
@@ -190,7 +188,7 @@ function elonmusk(client) {
           tweet_id = tweet.id;
         } else {
           if (tweet_id < tweet.id) {
-            tweet_id =  tweet.id;
+            tweet_id = tweet.id;
 
             var tweet_type = undefined;
             if (tweet.in_reply_to_status_id) {
@@ -226,7 +224,11 @@ function elonmusk(client) {
               timestamp: now2(),
               tweet: tweet_data
             }
-            console.log('send@@',fcm_data);
+            console.log('send@@', fcm_data);
+
+            Object.keys(bot_sockets).forEach(function (socket_id) {
+              io.to(socket_id).emit('new_twitter', tweet_data)
+            })
             fcm.sendProNoticeFcm(fcm_data);
           }
           //console.log("Tweet@", id, text, created_at);
@@ -239,7 +241,6 @@ function elonmusk(client) {
     }
   });
 }
-
 
 function now() {
   return dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
