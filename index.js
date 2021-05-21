@@ -102,7 +102,7 @@ setInterval(function(){
   if(i>=3){
     i=0;
   }
-},300);
+},1000);
 
 var init_max_notice_id = -1;
 function parsePosts(posts) {
