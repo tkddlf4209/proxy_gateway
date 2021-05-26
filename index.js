@@ -171,7 +171,7 @@ async function upbitNoticeCrawler() {
       }).catch(function (error) {
         console.log('error@',error);
       })
-    }, 3000);
+    }, 500);
   }
 
 }
