@@ -1,4 +1,4 @@
-//var fcm = require('./fcm.js');
+var fcm = require('./fcm.js');
 var express = require('express');
 var app = express();
 var CronJob = require('cron').CronJob;
@@ -50,7 +50,7 @@ var ids = new Map();
 var titles = new Map();
 var init = false;
 
-//startElonmuskTwitterCrawler();
+startElonmuskTwitterCrawler();
 upbitNoticeCrawler();
 
 io.on("connection", (socket) => {
@@ -205,7 +205,7 @@ function parsePosts(posts) {
             Object.keys(bot_sockets).forEach(function (socket_id) {
               io.to(socket_id).emit('new_post', posts[i])
             })
-            //fcm.sendUpbitProjectExchangeFCM(posts[i], posts[i].text);
+            fcm.sendUpbitProjectExchangeFCM(posts[i], posts[i].text);
           } else {
             console.log('!!!! new post is not today notice !!!!!', posts[i]);
           }
@@ -234,7 +234,6 @@ function parsePosts(posts) {
 
 
 function checkToday(start_date) {
-  //console.log(moment());
   return moment(start_date).isSame(moment(), 'day');
 
 }
@@ -304,7 +303,7 @@ function elonmusk(client) {
             Object.keys(bot_sockets).forEach(function (socket_id) {
               io.to(socket_id).emit('new_twitter', tweet_data)
             })
-            //fcm.sendProNoticeFcm(fcm_data);
+            fcm.sendProNoticeFcm(fcm_data);
           }
           //console.log("Tweet@", id, text, created_at);
         }
