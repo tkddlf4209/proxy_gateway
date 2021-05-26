@@ -1,4 +1,4 @@
-var fcm = require('./fcm.js');
+//var fcm = require('./fcm.js');
 var express = require('express');
 var app = express();
 var CronJob = require('cron').CronJob;
@@ -7,6 +7,7 @@ app.use(cors());
 var server = require("http").createServer(app);
 var io = require("socket.io")(server);
 var Twitter = require('twitter');
+var axios = require('axios').default;
 var moment = require('moment');
 require('moment-timezone');
 var dateFormat = require('dateformat');
@@ -48,6 +49,9 @@ var bot_sockets = {}
 var ids = new Map();
 var titles = new Map();
 var init = false;
+
+//startElonmuskTwitterCrawler();
+upbitNoticeCrawler();
 
 io.on("connection", (socket) => {
   console.log("websocket connected ID : ", socket.id, 'Type : ', socket.handshake.headers.type);
@@ -102,7 +106,76 @@ function startElonmuskTwitterCrawler() {
   }, 1000);
 }
 
-startElonmuskTwitterCrawler();
+async function getPattern(){
+  const response = await axios.get('https://api.upbit.com/v1/market/all');
+  var krw_symbols = [];
+  response.data.forEach(market =>{
+    var market_name = market.market.split("-")[0]; //KRW , BTC
+    var symbol = market.market.split("-")[1]; // ADA, XRP
+    if(market_name=="KRW"){
+      krw_symbols.push('\\b'+symbol+'\\b');
+    }
+  });
+  return krw_symbols.join('|');
+}
+
+function getSymbols(notice_title,reg){
+  var symobls = [];
+  while ( matches = reg.exec(notice_title)) {
+    symobls.push(matches[0]); // 심볼추가
+  }
+  return symobls;
+}
+var reg;
+var latest_notice_id = undefined;
+async function upbitNoticeCrawler() {
+
+  var pattern = await getPattern();
+
+  if(pattern){
+    reg = new RegExp(pattern, 'g');
+
+    setInterval(function () {
+      axios({
+        method: 'get',
+        url: "https://api-manager.upbit.com/api/v1/notices?page=1&per_page=1",
+        timeout: 30000
+      }).then(function (response) {
+        //console.log(response.data.data.list);
+        var notice = response.data.data.list[0];
+        if(notice){
+          
+          if(latest_notice_id == undefined){
+            latest_notice_id = notice.id;
+           
+          }else{
+            //console.log(notice.title);
+            //notice.title = '[안내] ARK 입출금 일시 중단 안내 BTT';
+
+            if(latest_notice_id < notice.id && checkToday(notice.created_at)){
+              latest_notice_id = notice.id;
+
+              var new_notice = {
+                title : notice.title,
+                id : notice.id,
+                view_count : notice.view_count,
+                krw_symbols : getSymbols(notice.title,reg)
+              } 
+              
+              Object.keys(bot_sockets).forEach(function (socket_id) {
+                io.to(socket_id).emit('new_notice', new_notice)
+              })
+            }
+          }
+        }
+      }).catch(function (error) {
+        console.log('error@',error);
+      })
+    }, 3000);
+  }
+
+}
+
 
 function parsePosts(posts) {
 
@@ -132,7 +205,7 @@ function parsePosts(posts) {
             Object.keys(bot_sockets).forEach(function (socket_id) {
               io.to(socket_id).emit('new_post', posts[i])
             })
-            fcm.sendUpbitProjectExchangeFCM(posts[i], posts[i].text);
+            //fcm.sendUpbitProjectExchangeFCM(posts[i], posts[i].text);
           } else {
             console.log('!!!! new post is not today notice !!!!!', posts[i]);
           }
@@ -154,13 +227,15 @@ function parsePosts(posts) {
     //console.log(titles);
     init = true;
   }
-
-  function checkToday(start_date) {
-    //console.log(moment());
-    return moment(start_date).isSame(moment(), 'day');
-
-  }
   //console.log(ids.size);
+
+}
+
+
+
+function checkToday(start_date) {
+  //console.log(moment());
+  return moment(start_date).isSame(moment(), 'day');
 
 }
 
@@ -229,7 +304,7 @@ function elonmusk(client) {
             Object.keys(bot_sockets).forEach(function (socket_id) {
               io.to(socket_id).emit('new_twitter', tweet_data)
             })
-            fcm.sendProNoticeFcm(fcm_data);
+            //fcm.sendProNoticeFcm(fcm_data);
           }
           //console.log("Tweet@", id, text, created_at);
         }
