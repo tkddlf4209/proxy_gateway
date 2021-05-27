@@ -106,22 +106,22 @@ function startElonmuskTwitterCrawler() {
   }, 1000);
 }
 
-async function getPattern(){
+async function getPattern() {
   const response = await axios.get('https://api.upbit.com/v1/market/all');
   var krw_symbols = [];
-  response.data.forEach(market =>{
+  response.data.forEach(market => {
     var market_name = market.market.split("-")[0]; //KRW , BTC
     var symbol = market.market.split("-")[1]; // ADA, XRP
-    if(market_name=="KRW"){
-      krw_symbols.push('\\b'+symbol+'\\b');
+    if (market_name == "KRW") {
+      krw_symbols.push('\\b' + symbol + '\\b');
     }
   });
   return krw_symbols.join('|');
 }
 
-function getSymbols(notice_title,reg){
+function getSymbols(notice_title, reg) {
   var symobls = [];
-  while ( matches = reg.exec(notice_title)) {
+  while (matches = reg.exec(notice_title)) {
     symobls.push(matches[0]); // 심볼추가
   }
   return symobls;
@@ -132,36 +132,37 @@ async function upbitNoticeCrawler() {
 
   var pattern = await getPattern();
 
-  if(pattern){
+  if (pattern) {
     reg = new RegExp(pattern, 'g');
-
     setInterval(function () {
+
+      var url = "https://api-manager.upbit.com/api/v1/notices?page=1&per_page=1&bitpump=" + Date.now();
       axios({
         method: 'get',
-        url: "https://api-manager.upbit.com/api/v1/notices?page=1&per_page=1",
+        url: url,
         timeout: 30000
       }).then(function (response) {
-        //console.log(response.data.data.list);
+        //console.log(response.headers.age, response.headers["cf-cache-status"]);
         var notice = response.data.data.list[0];
-        if(notice){
-          
-          if(latest_notice_id == undefined){
+        if (notice) {
+
+          if (latest_notice_id == undefined) {
             latest_notice_id = notice.id;
-           
-          }else{
-            //console.log(notice.title);
+
+          } else {
+            //console.log(notice.title, response.headers["cf-cache-status"]);
             //notice.title = '[안내] ARK 입출금 일시 중단 안내 BTT';
 
-            if(latest_notice_id < notice.id && checkToday(notice.created_at)){
+            if (latest_notice_id < notice.id && checkToday(notice.created_at)) {
               latest_notice_id = notice.id;
 
               var new_notice = {
-                title : notice.title,
-                id : notice.id,
-                view_count : notice.view_count,
-                krw_symbols : getSymbols(notice.title,reg)
-              } 
-              
+                title: notice.title,
+                id: notice.id,
+                view_count: notice.view_count,
+                krw_symbols: getSymbols(notice.title, reg)
+              }
+
               Object.keys(bot_sockets).forEach(function (socket_id) {
                 io.to(socket_id).emit('new_notice', new_notice)
               })
@@ -169,7 +170,7 @@ async function upbitNoticeCrawler() {
           }
         }
       }).catch(function (error) {
-        console.log('error@',error);
+        console.log('upbit crawler error@', url, error.message);
       })
     }, 500);
   }
