@@ -268,6 +268,16 @@ function elonmusk(client) {
             var tweet_type = undefined;
             if (tweet.in_reply_to_status_id) {
               tweet_type = "REPLY";
+              // 답글일 경우 트윗 screen name을 제외
+              if (tweet.entities && tweet.entities.user_mentions) {
+                var last_mention = tweet.entities.user_mentions[tweet.entities.user_mentions.length - 1];
+
+                if (last_mention && last_mention.indices && last_mention.indices.length == 2) {
+                    var indice = last_mention.indices[1];
+                    //console.log(tweet.full_text.substring(indice));
+                    tweet.full_text = tweet.full_text.substring(indice);
+                }
+              }
             } else {
               if (tweet.full_text.indexOf("RT ") > -1) {
                 tweet_type = "RETWEET";
