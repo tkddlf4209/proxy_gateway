@@ -89,7 +89,7 @@ async function startSocketServer(){
           } else {
             //console.log(notice.title, response.headers["cf-cache-status"]);
             //notice.title = '[안내] ARK 입출금 일시 중단 안내 BTT';
-            console.log(notice.title,notice.view_count);
+            //console.log(notice.title,notice.view_count);
             if (latest_notice_id < notice.id && checkToday(notice.created_at)) {
               latest_notice_id = notice.id;
     
