@@ -49,39 +49,77 @@ var bot_sockets = {}
 var ids = new Map();
 var titles = new Map();
 var init = false;
-
+startSocketServer();
 startElonmuskTwitterCrawler();
-upbitNoticeCrawler();
+//upbitNoticeCrawler();
 
-io.on("connection", (socket) => {
-  console.log("websocket connected ID : ", socket.id, 'Type : ', socket.handshake.headers.type);
+var reg;
+var latest_notice_id = undefined;
+async function startSocketServer(){
+  var pattern = await getPattern();
 
-  if (socket.handshake.headers.type == TYPE_CRAWLER) {
-    console.log("CRAWLER websocket connected ID : ", socket.id);
-  } else if (socket.handshake.headers.type == TYPE_BOT) {
-    console.log("BOT websocket connected ID : ", socket.id);
-    bot_sockets[socket.id] = socket;
-  } else if (socket.handshake.headers.type == TYPE_ASSIST) {
-    console.log("TYPE_ASSIST websocket connected ID : ");
+  if (pattern) {
+    reg = new RegExp(pattern, 'g');
+    io.on("connection", (socket) => {
+      console.log("websocket connected ID : ", socket.id, 'Type : ', socket.handshake.headers.type);
+    
+      if (socket.handshake.headers.type == TYPE_CRAWLER) {
+        console.log("CRAWLER websocket connected ID : ", socket.id);
+      } else if (socket.handshake.headers.type == TYPE_BOT) {
+        console.log("BOT websocket connected ID : ", socket.id);
+        bot_sockets[socket.id] = socket;
+      } else if (socket.handshake.headers.type == TYPE_ASSIST) {
+        console.log("TYPE_ASSIST websocket connected ID : ");
+      }
+    
+      socket.on("notice", (rsp) => {
+        if (rsp.result == 'success') {
+          var posts = rsp.data.data.posts;
+          console.log(posts.length, ids.size);
+          parsePosts(posts);
+        }
+      });
+    
+      socket.on("upbit_notice", (rsp) => {
+        var notice = rsp.data.list[0];
+        if (notice) {
+          //console.log(notice);
+          if (latest_notice_id == undefined) {
+            latest_notice_id = notice.id;
+          } else {
+            //console.log(notice.title, response.headers["cf-cache-status"]);
+            //notice.title = '[안내] ARK 입출금 일시 중단 안내 BTT';
+            console.log(notice.title,notice.view_count);
+            if (latest_notice_id < notice.id && checkToday(notice.created_at)) {
+              latest_notice_id = notice.id;
+    
+              var new_notice = {
+                title: notice.title,
+                id: notice.id,
+                view_count: notice.view_count,
+                krw_symbols: getSymbols(notice.title, reg)
+              }
+    
+              Object.keys(bot_sockets).forEach(function (socket_id) {
+                io.to(socket_id).emit('new_notice', new_notice)
+              })
+            }
+          }
+        }
+      });
+    
+      socket.on("disconnect", () => {
+        if (socket.handshake.headers.type == TYPE_CRAWLER) {
+          console.log('cralwer socket disconnect , id : ', socket.id);
+        } else if (socket.handshake.headers.type == TYPE_BOT) {
+          delete bot_sockets[socket.id];
+          console.log('bot socket disconnect , count ', Object.keys(bot_sockets).length);
+        }
+      });
+    });
+
   }
-
-  socket.on("notice", (rsp) => {
-    if (rsp.result == 'success') {
-      var posts = rsp.data.data.posts;
-      console.log(posts.length, ids.size);
-      parsePosts(posts);
-    }
-  });
-
-  socket.on("disconnect", () => {
-    if (socket.handshake.headers.type == TYPE_CRAWLER) {
-      console.log('cralwer socket disconnect , id : ', socket.id);
-    } else if (socket.handshake.headers.type == TYPE_BOT) {
-      delete bot_sockets[socket.id];
-      console.log('bot socket disconnect , count ', Object.keys(bot_sockets).length);
-    }
-  });
-});
+}
 
 function startElonmuskTwitterCrawler() {
   console.log('startElonmuskTwitterCrawler');
@@ -126,57 +164,6 @@ function getSymbols(notice_title, reg) {
   }
   return symobls;
 }
-var reg;
-var latest_notice_id = undefined;
-async function upbitNoticeCrawler() {
-
-  var pattern = await getPattern();
-
-  if (pattern) {
-    reg = new RegExp(pattern, 'g');
-    setInterval(function () {
-
-      var url = "https://api-manager.upbit.com/api/v1/notices?page=1&per_page=1&bitpump=" + Date.now();
-      axios({
-        method: 'get',
-        url: url,
-        timeout: 30000
-      }).then(function (response) {
-        //console.log(response.headers.age, response.headers["cf-cache-status"]);
-        var notice = response.data.data.list[0];
-        if (notice) {
-
-          if (latest_notice_id == undefined) {
-            latest_notice_id = notice.id;
-
-          } else {
-            //console.log(notice.title, response.headers["cf-cache-status"]);
-            //notice.title = '[안내] ARK 입출금 일시 중단 안내 BTT';
-
-            if (latest_notice_id < notice.id && checkToday(notice.created_at)) {
-              latest_notice_id = notice.id;
-
-              var new_notice = {
-                title: notice.title,
-                id: notice.id,
-                view_count: notice.view_count,
-                krw_symbols: getSymbols(notice.title, reg)
-              }
-
-              Object.keys(bot_sockets).forEach(function (socket_id) {
-                io.to(socket_id).emit('new_notice', new_notice)
-              })
-            }
-          }
-        }
-      }).catch(function (error) {
-        console.log('upbit crawler error@', url, error.message);
-      })
-    }, 500);
-  }
-
-}
-
 
 function parsePosts(posts) {
 
